@@ -1,8 +1,23 @@
 cloudprovider: vsphere
+cloudCredentialSecretName: "elara-vcsa"
 
-cloudCredentialSecretName: elara-vcsa
+cluster:
+  name: nonprod-ha-cluster
+  labels:
+    environment: nonprod
+    arch: cellbased
+    workload: product_name
 
-# Specify nodepool options. Can add multiple node groups, specify etcd, controlplane and worker roles.
+# enable local auth endpoint
+localClusterAuthEndpoint:
+  enabled: false
+  # specify fqdn of local access endpoint
+  # fqdn: foo.bar.example
+  # specify cacert of local access endpoint
+  # caCerts: ""
+# -----------------------------------------------------------------------------
+# Node Pools
+# -----------------------------------------------------------------------------
 nodepools:
   # ---------------------------------------------------------------------------
   # Control Plane / ETCD pools (one per zone)
@@ -181,3 +196,36 @@ nodepools:
     vcenterPort: 443
 
   - name: wpool-z3
+    etcd: false
+    controlplane: false
+    worker: true
+    quantity: 1
+    paused: false
+
+    labels:
+      topology.kubernetes.io/zone: zone3
+
+    creationType: "library"
+    contentLibrary: "golden-images"
+    cloneFrom: "jammy-rancher-node-amd64-v3"
+
+    cpuCount: "8"
+    memorySize: "49152"
+    diskSize: "524288"
+
+    datacenter: "elara-dc"
+    datastore: "elara-dc/datastore/esxi-03-hdd"
+    hostsystem: "elara-dc/host/elara-vm-cluster/esxi-03"
+    folder: "/elara-dc/vm/propay"
+    pool: "elara-dc/host/elara-vm-cluster/Resources"
+    network: "elara-dc/network/10g-propay"
+
+    vappIpallocationpolicy: "dhcp"
+    vappIpprotocol: "ipv4"
+
+    cfgparam:
+      - "disk.enableUUID=TRUE"
+
+    sshPort: "22"
+    sshUserGroup: staff
+    vcenterPort: 443

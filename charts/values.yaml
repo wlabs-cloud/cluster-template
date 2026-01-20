@@ -1,224 +1,40 @@
-cloudprovider: vsphere
-cloudCredentialSecretName: "elara-vcsa"
-
+# cluster specific values
 cluster:
-  name: nonprod-ha-cluster
-  kubernetesVersion: "v1.34.2+rke2r1"
-  labels:
-    environment: nonprod
-    arch: cellbased
-    workload: product_name
-# -----------------------------------------------------------------------------
-# Node Pools
-# -----------------------------------------------------------------------------
-nodepools:
-  # ---------------------------------------------------------------------------
-  # Control Plane / ETCD pools (one per zone)
-  # ---------------------------------------------------------------------------
+  # specify cluster name
+  name: template-rke2
 
-  - name: cpool-z1
-    etcd: true
-    controlplane: true
-    worker: false
-    quantity: 1
-    paused: false
+  # specify cluster labels
+  labels: {}
 
-    labels:
-      topology.kubernetes.io/zone: zone1
+  # specify cluster annotations
+  annotations: {}
 
-    creationType: "library"
-    contentLibrary: "golden-images"
-    cloneFrom: "jammy-rancher-node-amd64-v3"
+# specify cloud credential secret name, do not need to be provided if using custom driver
+cloudCredentialSecretName: ""
 
-    cpuCount: "8"
-    memorySize: "49152"
-    diskSize: "524288"
+# specify cloud provider, options are amazonec2, digitalocean, azure, vsphere or custom
+cloudprovider: "digitalocean"
 
-    datacenter: "elara-dc"
-    datastore: "elara-dc/datastore/esxi-01-hdd"
-    hostsystem: "elara-dc/host/elara-vm-cluster/esxi-01"
-    folder: "/elara-dc/vm/propay"
-    pool: "elara-dc/host/elara-vm-cluster/Resources"
+kubernetesVersion: ""
 
-    network: "elara-dc/network/10g-propay"
-    vappIpallocationpolicy: "dhcp"
-    vappIpprotocol: "ipv4"
+# enable local auth endpoint
+localClusterAuthEndpoint:
+  enabled: false
+  # specify fqdn of local access endpoint
+  # fqdn: foo.bar.example
+  # specify cacert of local access endpoint
+  # caCerts: ""
 
-    cfgparam:
-      - "disk.enableUUID=TRUE"
+# specify user principal ids to be assiged as cluster members
+# clusterMembers:
+# - principalName: "local://u-z8zl5"
+#   roleTemplateName: "cluster-member"
 
-    sshPort: "22"
-    sshUserGroup: staff
-    vcenterPort: 443
-
-  - name: cpool-z2
-    etcd: true
-    controlplane: true
-    worker: false
-    quantity: 1
-    paused: false
-
-    labels:
-      topology.kubernetes.io/zone: zone2
-
-    creationType: "library"
-    contentLibrary: "golden-images"
-    cloneFrom: "jammy-rancher-node-amd64-v3"
-
-    cpuCount: "8"
-    memorySize: "49152"
-    diskSize: "524288"
-
-    datacenter: "elara-dc"
-    datastore: "elara-dc/datastore/esxi-02-hdd"
-    hostsystem: "elara-dc/host/elara-vm-cluster/esxi-02"
-    folder: "/elara-dc/vm/propay"
-    pool: "elara-dc/host/elara-vm-cluster/Resources"
-    network: "elara-dc/network/10g-propay"
-    vappIpallocationpolicy: "dhcp"
-    vappIpprotocol: "ipv4"
-
-    cfgparam:
-      - "disk.enableUUID=TRUE"
-
-    sshPort: "22"
-    sshUserGroup: staff
-    vcenterPort: 443
-
-  - name: cpool-z3
-    etcd: true
-    controlplane: true
-    worker: false
-    quantity: 1
-    paused: false
-
-    labels:
-      topology.kubernetes.io/zone: zone3
-
-    creationType: "library"
-    contentLibrary: "golden-images"
-    cloneFrom: "jammy-rancher-node-amd64-v3"
-
-    cpuCount: "8"
-    memorySize: "49152"
-    diskSize: "524288"
-
-    datacenter: "elara-dc"
-    datastore: "elara-dc/datastore/esxi-03-hdd"
-    hostsystem: "elara-dc/host/elara-vm-cluster/esxi-03"
-    folder: "/elara-dc/vm/propay"
-    pool: "elara-dc/host/elara-vm-cluster/Resources"
-    network: "elara-dc/network/10g-propay"
-    vappIpallocationpolicy: "dhcp"
-    vappIpprotocol: "ipv4"
-
-    cfgparam:
-      - "disk.enableUUID=TRUE"
-
-    sshPort: "22"
-    sshUserGroup: staff
-    vcenterPort: 443
-
-  # ---------------------------------------------------------------------------
-  # Worker pools (one per zone)
-  # ---------------------------------------------------------------------------
-
-  - name: wpool-z1
-    etcd: false
-    controlplane: false
-    worker: true
-    quantity: 1
-    paused: false
-
-    labels:
-      topology.kubernetes.io/zone: zone1
-
-    creationType: "library"
-    contentLibrary: "golden-images"
-    cloneFrom: "jammy-rancher-node-amd64-v3"
-
-    cpuCount: "8"
-    memorySize: "49152"
-    diskSize: "524288"
-
-    datacenter: "elara-dc"
-    datastore: "elara-dc/datastore/esxi-01-hdd"
-    hostsystem: "elara-dc/host/elara-vm-cluster/esxi-01"
-    folder: "/elara-dc/vm/propay"
-    pool: "elara-dc/host/elara-vm-cluster/Resources"
-    network: "elara-dc/network/10g-propay"
-
-    cfgparam:
-      - "disk.enableUUID=TRUE"
-
-    sshPort: "22"
-    sshUserGroup: staff
-    vcenterPort: 443
-
-  - name: wpool-z2
-    etcd: false
-    controlplane: false
-    worker: true
-    quantity: 1
-    paused: false
-
-    labels:
-      topology.kubernetes.io/zone: zone2
-
-    creationType: "library"
-    contentLibrary: "golden-images"
-    cloneFrom: "jammy-rancher-node-amd64-v3"
-
-    cpuCount: "8"
-    memorySize: "49152"
-    diskSize: "524288"
-
-    datacenter: "elara-dc"
-    datastore: "elara-dc/datastore/esxi-02-hdd"
-    hostsystem: "elara-dc/host/elara-vm-cluster/esxi-02"
-    folder: "/elara-dc/vm/propay"
-    pool: "elara-dc/host/elara-vm-cluster/Resources"
-    network: "elara-dc/network/10g-propay"
-    vappIpallocationpolicy: "dhcp"
-    vappIpprotocol: "ipv4"
-
-    cfgparam:
-      - "disk.enableUUID=TRUE"
-    sshPort: "22"
-    sshUserGroup: staff
-    vcenterPort: 443
-
-  - name: wpool-z3
-    etcd: false
-    controlplane: false
-    worker: true
-    quantity: 1
-    paused: false
-
-    labels:
-      topology.kubernetes.io/zone: zone3
-
-    creationType: "library"
-    contentLibrary: "golden-images"
-    cloneFrom: "jammy-rancher-node-amd64-v3"
-
-    cpuCount: "8"
-    memorySize: "49152"
-    diskSize: "524288"
-
-    datacenter: "elara-dc"
-    datastore: "elara-dc/datastore/esxi-03-hdd"
-    hostsystem: "elara-dc/host/elara-vm-cluster/esxi-03"
-    folder: "/elara-dc/vm/propay"
-    pool: "elara-dc/host/elara-vm-cluster/Resources"
-    network: "elara-dc/network/10g-propay"
-
-    vappIpallocationpolicy: "dhcp"
-    vappIpprotocol: "ipv4"
-
-    cfgparam:
-      - "disk.enableUUID=TRUE"
-
-    sshPort: "22"
-    sshUserGroup: staff
-    vcenterPort: 443
+# enable monitoring
+monitoring:
+  enabled: false
+  # specify which version to install, can be semver range. If version is empty or is semver range, it will pick up the latest version.
+  # version: ""
+  # specify cutsom values set
+  # values:
+  #   foo: bar
