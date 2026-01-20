@@ -13,7 +13,7 @@ questions:
     type: cloudcredential
     group: "General"
   - variable: cloudprovider
-    default: custom
+    default: vsphere
     description: "Specify Infrastructure provider for underlying nodes"
     label: "Infrastructure Provider"
     type: enum
@@ -189,7 +189,7 @@ questions:
   # vsphere
   - variable: nodepools.0.vcenter
     label: "vSphere IP/hostname"
-    default: ""
+    default: "vcsa.wlabs.cloud"
     type: hostname
     description: "vSphere IP/hostname for vCenter"
     required: true
@@ -197,7 +197,7 @@ questions:
     group: "Nodepools"
   - variable: nodepools.0.datacenter
     label: "Vsphere Datacenter"
-    default: ""
+    default: "elara-dc"
     type: hostname
     description: "vSphere datacenter for virtual machine"
     required: true
@@ -205,7 +205,7 @@ questions:
     group: "Nodepools"
   - variable: nodepools.0.datastore
     label: "Vsphere Datastore"
-    default: ""
+    default: "elara-dc/datastore/esxi-01-hdd"
     type: string
     description: "vSphere datastore for virtual machine"
     required: true
@@ -221,28 +221,28 @@ questions:
     group: "Nodepools"
   - variable: nodepools.0.diskSize
     label: "Disk Size"
-    default: "20480"
+    default: "524288"
     type: string
     description: "vSphere size of disk for docker VM (in MB)"
     show_if: cloudprovider=vsphere
     group: "Nodepools"
   - variable: nodepools.0.memorySize
     label: "Memory Size"
-    default: "2048"
+    default: "49152"
     type: string
     description: "vSphere size of memory for docker VM (in MB)"
     show_if: cloudprovider=vsphere
     group: "Nodepools"
   - variable: nodepools.0.network
     label: "Network"
-    default: ""
+    default: "elara-dc/network/10g-project_name"
     type: string
     description: "vSphere network where the virtual machine will be attached"
     show_if: cloudprovider=vsphere
     group: "Nodepools"
   - variable: nodepools.0.pool
     label: "Resource Pool"
-    default: ""
+    default: "elara-dc/host/elara-vm-cluster/Resources/project_name"
     type: string
     description: "vSphere resource pool for docker VM"
     show_if: cloudprovider=vsphere
@@ -256,14 +256,14 @@ questions:
     group: "Nodepools"
   - variable: nodepools.0.sshUserGroup
     label: "SSH User Group"
-    default: docker:staff
+    default: staff
     type: hostname
     description: "If using a non-B2D image the uploaded keys will need chown'ed, defaults to staff e.g. docker:staff"
     show_if: cloudprovider=vsphere
     group: "Nodepools"
   - variable: nodepools.0.vappIpallocationpolicy
     label: "IP allocation policy"
-    default: ""
+    default: "dhcp"
     type: enum
     options:
       - dhcp
@@ -275,7 +275,103 @@ questions:
     group: "Nodepools"
   - variable: nodepools.0.vappIpprotocol
     label: "IP protocol"
+    default: "ipv4"
+    type: enum
+    options:
+      - IPv4
+      - IPv6
+    description: "'vSphere vApp IP protocol for this deployment. Supported values are: IPv4 and IPv6'"
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.vcenter
+    label: "vSphere IP/hostname"
+    default: "vcsa.wlabs.cloud"
+    type: hostname
+    description: "vSphere IP/hostname for vCenter"
+    required: true
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.datacenter
+    label: "Vsphere Datacenter"
+    default: "elara-dc"
+    type: hostname
+    description: "vSphere datacenter for virtual machine"
+    required: true
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.datastore
+    label: "Vsphere Datastore"
+    default: "elara-dc/datastore/esxi-01-hdd"
+    type: string
+    description: "vSphere datastore for virtual machine"
+    required: true
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.datastoreCluster
+    label: "Vsphere DatastoreCluster"
     default: ""
+    type: string
+    description: "vSphere datastore cluster for virtual machine"
+    required: true
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.diskSize
+    label: "Disk Size"
+    default: "524288"
+    type: string
+    description: "vSphere size of disk for docker VM (in MB)"
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.memorySize
+    label: "Memory Size"
+    default: "49152"
+    type: string
+    description: "vSphere size of memory for docker VM (in MB)"
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.network
+    label: "Network"
+    default: "elara-dc/network/10g-project_name"
+    type: string
+    description: "vSphere network where the virtual machine will be attached"
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.pool
+    label: "Resource Pool"
+    default: "elara-dc/host/elara-vm-cluster/Resources/project_name"
+    type: string
+    description: "vSphere resource pool for docker VM"
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.sshPort
+    label: "SSH Port"
+    default: "22"
+    type: string
+    description: "If using a non-B2D image you can specify the ssh port"
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.sshUserGroup
+    label: "SSH User Group"
+    default: staff
+    type: hostname
+    description: "If using a non-B2D image the uploaded keys will need chown'ed, defaults to staff e.g. docker:staff"
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.vappIpallocationpolicy
+    label: "IP allocation policy"
+    default: "dhcp"
+    type: enum
+    options:
+      - dhcp
+      - fixed
+      - transient
+      - fixedAllocated
+    description: "'vSphere vApp IP allocation policy. Supported values are: dhcp, fixed, transient and fixedAllocated'"
+    show_if: cloudprovider=vsphere
+    group: "Nodepools"
+  - variable: nodepools.1.vappIpprotocol
+    label: "IP protocol"
+    default: "ipv4"
     type: enum
     options:
       - IPv4
